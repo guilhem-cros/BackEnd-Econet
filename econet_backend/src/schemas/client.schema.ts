@@ -27,7 +27,7 @@ export class Client extends Document {
     fav_articles: string[];
 
     @Prop({type:[String],required: true})
-    wrote_articles: string[];
+    created_publications: string[];
 
     @Prop({type:[{type: mongoose.Schema.Types.ObjectId,ref:EcoSpot.name}],required: true})
     fav_ecospots: EcoSpot[];

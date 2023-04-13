@@ -7,7 +7,7 @@ export class CreateClientDto {
     firebaseId: string;
     isAdmin = false;
     fav_articles: string[] = [];
-    wrote_articles: string[] = [];
+    created_publications: string[] = [];
     fav_ecospots: EcoSpot[] = [];
     created_ecospots: EcoSpot[] = [];
     //profile_pic: Buffer; //TODO: gestion des images

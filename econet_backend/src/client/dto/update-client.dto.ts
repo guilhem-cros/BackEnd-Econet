@@ -7,7 +7,7 @@ export class UpdateClientDto {
     firebaseId?: string;
     isAdmin?: boolean;
     fav_articles?: string[];
-    wrote_articles?: string[];
+    created_publications?: string[];
     fav_ecospots?: EcoSpot[];
     created_ecospots?: EcoSpot[];
 

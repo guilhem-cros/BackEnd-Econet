@@ -1,13 +1,9 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import {Spot} from "./spot.schema";
 
 @Schema()
-export class EcoSpot extends Document {
-    @Prop({required: true})
-    name: string;
-
-    @Prop({required: true, unique: true})
-    address: string;
+export class EcoSpot extends Spot {
+    //Propriétés spécifiques aux Ecospots ci-dessous
 
     @Prop({required: true})
     details: string;
@@ -32,3 +28,5 @@ export class EcoSpot extends Document {
 }
 
 export const EcoSpotSchema = SchemaFactory.createForClass(EcoSpot);
+
+

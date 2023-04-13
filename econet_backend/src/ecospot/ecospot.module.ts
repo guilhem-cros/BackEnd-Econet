@@ -9,6 +9,6 @@ import {EcoSpot, EcoSpotSchema} from "../schemas/ecospot.schema";
     MongooseModule.forFeature([{ name: EcoSpot.name, schema: EcoSpotSchema }]),
   ],
   providers: [EcospotService],
-  controllers: [EcospotController]
+  controllers: [EcospotController],
 })
 export class EcospotModule {}

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema({ discriminatorKey: 'spotType' })
+@Schema()
 export class Spot extends Document {
     //Propriétés communes à tous les spots ci-dessous
     @Prop({ required: true })

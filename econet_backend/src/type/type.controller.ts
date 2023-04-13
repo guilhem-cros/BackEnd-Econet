@@ -28,8 +28,8 @@ export class TypeController {
         return this.typeService.update(id, updateTypeDto);
     }
 
-    @Delete(':id')
-    remove(@Param('id') id: string): Promise<Type> {
-        return this.typeService.remove(id);
-    }
+    //@Delete(':id')
+    //remove(@Param('id') id: string): Promise<Type> {
+      //  return this.typeService.remove(id);
+    //}
 }

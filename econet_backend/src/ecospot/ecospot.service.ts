@@ -1,13 +1,17 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import {forwardRef, HttpException, HttpStatus, Inject, Injectable} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {isValidObjectId, Model} from 'mongoose';
 import { CreateEcoSpotDto } from './dto/create-ecospot.dto';
 import { UpdateEcoSpotDto } from './dto/update-ecospot.dto';
 import { EcoSpot } from '../schemas/ecospot.schema';
+import {TypeService} from "../type/type.service";
+import {ClientService} from "../client/client.service";
 
 @Injectable()
 export class EcospotService {
-    constructor(@InjectModel(EcoSpot.name) private ecoSpotModel: Model<EcoSpot>) {}
+    constructor(@InjectModel(EcoSpot.name) private ecoSpotModel: Model<EcoSpot>,
+                @Inject(forwardRef(() => TypeService)) private readonly typeService: TypeService,
+                @Inject(forwardRef(() => ClientService)) private readonly clientService: ClientService,) {}
 
     private checkId(id: string){
         if(!isValidObjectId(id)){
@@ -52,8 +56,11 @@ export class EcospotService {
     async update(id: string, updateEcoSpotDto: UpdateEcoSpotDto): Promise<EcoSpot> {
         this.checkId(id);
         try{
-            return await this.ecoSpotModel.findByIdAndUpdate(id, updateEcoSpotDto, { new: true }).exec();
-        }
+            const updatedEcoSpot = await this.ecoSpotModel
+                .findOneAndUpdate({ _id: id }, { $set: updateEcoSpotDto }, { new: true })
+                .exec();
+            await this.updateEcoSpotInClients(updatedEcoSpot);
+            return updatedEcoSpot;        }
         catch (error){
             throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -63,11 +70,32 @@ export class EcospotService {
     async remove(id: string): Promise<EcoSpot> {
         this.checkId(id);
         try{
+            await this.typeService.removeEcoSpotFromAssociatedSpots(id);
+            await this.clientService.removeEcoSpotFromClient(id);
+
             return await this.ecoSpotModel.findByIdAndRemove(id).exec();
         }
         catch (error){
             throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    async findByType(typeId: string): Promise<EcoSpot[]> {
+        const type = await this.typeService.findOne(typeId);
+        if (!type) {
+            throw new HttpException("Type not found",HttpStatus.NOT_FOUND);
+        }
+        const ecoSpotIds = type.associated_spots;
+        return await Promise.all(ecoSpotIds.map(id => this.findOne(id)));
+    }
+
+    async updateEcoSpotInClients(ecoSpot: EcoSpot): Promise<void> {
+        const { _id, name, address, main_type, other_types } = ecoSpot;
+        const ecoSpotData = { _id, name, address, main_type, other_types };
+
+        await this.clientService.updateEcoSpotInFavAndCreated(ecoSpotData);
+    }
+
+
 }
 

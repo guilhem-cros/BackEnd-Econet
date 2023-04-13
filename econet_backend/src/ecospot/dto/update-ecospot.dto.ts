@@ -12,4 +12,5 @@ export class UpdateEcoSpotDto {
         description: string;
     };
     other_types?: string[];
+    isPublished?: boolean;
 }

@@ -25,6 +25,9 @@ export class EcoSpot extends Spot {
 
     @Prop({type:[String],required: true})
     other_types: string[];
+
+    @Prop({required: true})
+    isPublished: boolean;
 }
 
 export const EcoSpotSchema = SchemaFactory.createForClass(EcoSpot);

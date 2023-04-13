@@ -4,6 +4,7 @@ import {isValidObjectId, Model} from 'mongoose';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Client } from '../schemas/client.schema';
+import {EcoSpot} from "../schemas/ecospot.schema";
 
 @Injectable()
 export class ClientService {
@@ -96,6 +97,34 @@ export class ClientService {
         catch (error) {
             throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    async removeEcoSpotFromClient(ecoSpotId: string): Promise<void> {
+        if(!isValidObjectId(ecoSpotId)){
+            throw new HttpException("Ecospot not found",HttpStatus.NOT_FOUND);
+        }
+        try{
+            await this.clientModel.updateMany(
+                { $or: [ { fav_ecospots: ecoSpotId }, { created_ecospots: ecoSpotId } ] },
+                { $pull: { fav_ecospots: ecoSpotId, created_ecospots: ecoSpotId } }
+            );
+        }
+        catch (error) {
+            throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    async updateEcoSpotInFavAndCreated(ecoSpot: Partial<EcoSpot>): Promise<void> {
+        const { _id } = ecoSpot;
+
+        await this.clientModel.updateMany(
+            { $or: [{ fav_ecospots: { _id } }, { created_ecospots: { _id } }] },
+            { $set: { 'fav_ecospots.$[ecoSpot]': ecoSpot, 'created_ecospots.$[ecoSpot]': ecoSpot } },
+            {
+                arrayFilters: [{ 'ecoSpot._id': _id }],
+            }
+        );
     }
 
 

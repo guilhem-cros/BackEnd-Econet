@@ -16,7 +16,7 @@ import { ConfigModule } from '@nestjs/config';
     EcospotModule,
     TypeModule,
     ClientModule,
-    ArticleModule, //TODO: .env
+    ArticleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

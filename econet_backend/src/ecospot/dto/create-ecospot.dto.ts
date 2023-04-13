@@ -12,4 +12,5 @@ export class CreateEcoSpotDto {
         description: string;
     };
     other_types: string[];
+    isPublished: boolean = false
 }

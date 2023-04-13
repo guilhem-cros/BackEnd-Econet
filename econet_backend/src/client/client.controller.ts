@@ -28,8 +28,8 @@ export class ClientController {
         return this.clientService.update(id, updateClientDto);
     }
 
-    @Delete(':id')
-    remove(@Param('id') id: string): Promise<Client> {
-        return this.clientService.remove(id);
-    }
+    //@Delete(':id')
+    //remove(@Param('id') id: string): Promise<Client> {
+      //  return this.clientService.remove(id);
+    //}
 }

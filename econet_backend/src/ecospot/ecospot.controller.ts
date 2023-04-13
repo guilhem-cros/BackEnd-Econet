@@ -23,6 +23,11 @@ export class EcospotController {
         return this.ecospotService.findOne(id);
     }
 
+    @Get('type/:typeId')
+    async findByType(@Param('typeId') typeId: string): Promise<EcoSpot[]> {
+        return this.ecospotService.findByType(typeId);
+    }
+
     @Put(':id')
     update(@Param('id') id: string, @Body() updateEcoSpotDto: UpdateEcoSpotDto): Promise<EcoSpot> {
         return this.ecospotService.update(id, updateEcoSpotDto);

@@ -1,4 +1,4 @@
-import {HttpException, HttpStatus, Injectable, NotFoundException} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {isValidObjectId, Model} from 'mongoose';
 import { CreateClientDto } from './dto/create-client.dto';
@@ -15,9 +15,9 @@ export class ClientService {
             throw new HttpException("Client not found",HttpStatus.NOT_FOUND);
         }
     }
-    async create(createClientDto: CreateClientDto): Promise<Client> {
+    async create(createClientDto: CreateClientDto, profilePicBuffer: Buffer): Promise<Client> {
         try{
-            const createdClient = new this.clientModel(createClientDto);
+            const createdClient = new this.clientModel({ ...createClientDto, profile_pic: profilePicBuffer });
             return await createdClient.save();
         }
         catch(error){
@@ -28,7 +28,7 @@ export class ClientService {
 
     async findAll(): Promise<Client[]> {
         try{
-            return await this.clientModel.find().exec();
+            return await this.clientModel.find().populate('fav_ecospots').populate('created_ecospots').exec();
         }
         catch(error){
             throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -38,7 +38,7 @@ export class ClientService {
     async findOne(id: string): Promise<Client> {
         this.checkId(id);
         try{
-            const client = await this.clientModel.findById(id).exec();
+            const client = await this.clientModel.findById(id).populate('fav_ecospots').populate('created_ecospots').exec();
             if(!client){
                 throw new HttpException("Client not found", HttpStatus.NOT_FOUND);
             }
@@ -51,7 +51,7 @@ export class ClientService {
 
     async findOneByFirebaseId(firebaseId: string): Promise<Client> {
         try{
-            const client = await this.clientModel.findOne({firebaseId:firebaseId}).exec();
+            const client = await this.clientModel.findOne({firebaseId:firebaseId}).populate('fav_ecospots').populate('created_ecospots').exec();
             if(!client){
                 throw new HttpException("Client not found", HttpStatus.NOT_FOUND);
             }

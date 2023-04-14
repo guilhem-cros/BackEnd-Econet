@@ -2,6 +2,7 @@ import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import {EcoSpot} from "./ecospot.schema";
 import * as mongoose from "mongoose";
+import {EcospotService} from "../ecospot/ecospot.service";
 
 @Schema()
 export class Client extends Document {

@@ -10,6 +10,7 @@ export class TypeController {
 
     @Post()
     create(@Body() createTypeDto: CreateTypeDto): Promise<Type> {
+        console.log("controller")
         return this.typeService.create(createTypeDto);
     }
 

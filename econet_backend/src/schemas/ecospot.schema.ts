@@ -26,7 +26,7 @@ export class EcoSpot extends Spot {
     @Prop({type:[String],required: true})
     other_types: string[];
 
-    @Prop({required: true})
+    @Prop({required: true, default: false})
     isPublished: boolean;
 }
 

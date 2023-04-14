@@ -112,6 +112,22 @@ export class TypeService {
         }
     }
 
+    async addEcoSpotToType(typeId: string, ecoSpotId: string): Promise<Type> {
+        return this.typeModel.findByIdAndUpdate(
+            typeId,
+            { $addToSet: { associated_spots: ecoSpotId } },
+            { new: true, useFindAndModify: false },
+        );
+    }
+
+    async removeEcoSpotFromType(typeId: string, ecoSpotId: string): Promise<Type> {
+        return this.typeModel.findByIdAndUpdate(
+            typeId,
+            { $pull: { associated_spots: ecoSpotId } },
+            { new: true, useFindAndModify: false },
+        );
+    }
+
 
 }
 

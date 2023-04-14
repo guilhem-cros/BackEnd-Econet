@@ -28,7 +28,7 @@ export class ClientService {
 
     async findAll(): Promise<Client[]> {
         try{
-            return await this.clientModel.find().exec();
+            return await this.clientModel.find().populate('fav_ecospots').populate('created_ecospots').exec();
         }
         catch(error){
             throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -38,7 +38,7 @@ export class ClientService {
     async findOne(id: string): Promise<Client> {
         this.checkId(id);
         try{
-            const client = await this.clientModel.findById(id).exec();
+            const client = await this.clientModel.findById(id).populate('fav_ecospots').populate('created_ecospots').exec();
             if(!client){
                 throw new HttpException("Client not found", HttpStatus.NOT_FOUND);
             }
@@ -115,15 +115,11 @@ export class ClientService {
     }
 
 
-    async updateEcoSpotInFavAndCreated(ecoSpot: Partial<EcoSpot>): Promise<void> {
-        const { _id } = ecoSpot;
-
-        await this.clientModel.updateMany(
-            { $or: [{ fav_ecospots: { _id } }, { created_ecospots: { _id } }] },
-            { $set: { 'fav_ecospots.$[ecoSpot]': ecoSpot, 'created_ecospots.$[ecoSpot]': ecoSpot } },
-            {
-                arrayFilters: [{ 'ecoSpot._id': _id }],
-            }
+    async addCreatedEcoSpot(clientId: string, ecoSpot: EcoSpot): Promise<Client> {
+        return this.clientModel.findByIdAndUpdate(
+            clientId,
+            { $addToSet: { created_ecospots: ecoSpot } },
+            { new: true, useFindAndModify: false },
         );
     }
 

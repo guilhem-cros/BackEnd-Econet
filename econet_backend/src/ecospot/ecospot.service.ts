@@ -19,10 +19,26 @@ export class EcospotService {
         }
     }
 
-    async create(createEcoSpotDto: CreateEcoSpotDto): Promise<EcoSpot> {
+    async create(createEcoSpotDto: CreateEcoSpotDto, clientId: string): Promise<EcoSpot> {
         try{
-            const createdEcospot = new this.ecoSpotModel(createEcoSpotDto);
-            return await createdEcospot.save();
+            const mainType = await this.typeService.findOne(createEcoSpotDto.main_type.id);
+            const createdEcoSpot = new this.ecoSpotModel({
+                ...createEcoSpotDto,
+                mainType,
+            });
+            const savedEcoSpot = await createdEcoSpot.save();
+
+            // Mettre à jour le type principal
+            await this.typeService.addEcoSpotToType(createEcoSpotDto.main_type.id, savedEcoSpot._id);
+
+            // Mettre à jour les types secondaires
+            for (const typeId of createEcoSpotDto.other_types) {
+                await this.typeService.addEcoSpotToType(typeId, savedEcoSpot._id);
+            }
+
+            await this.clientService.addCreatedEcoSpot(clientId, savedEcoSpot);
+
+            return savedEcoSpot;
         }
         catch(error){
             throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -55,14 +71,30 @@ export class EcospotService {
 
     async update(id: string, updateEcoSpotDto: UpdateEcoSpotDto): Promise<EcoSpot> {
         this.checkId(id);
-        try{
+        try {
+            const currentEcoSpot = await this.ecoSpotModel.findById(id).exec();
             const updatedEcoSpot = await this.ecoSpotModel
                 .findOneAndUpdate({ _id: id }, { $set: updateEcoSpotDto }, { new: true })
                 .exec();
-            await this.updateEcoSpotInClients(updatedEcoSpot);
-            return updatedEcoSpot;        }
-        catch (error){
-            throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
+
+            if (currentEcoSpot.main_type !== updatedEcoSpot.main_type) {
+                await this.typeService.removeEcoSpotFromType(currentEcoSpot.main_type.id, id);
+                await this.typeService.addEcoSpotToType(updatedEcoSpot.main_type.id, id);
+            }
+
+            const otherTypesToRemove = currentEcoSpot.other_types.filter(t => !updatedEcoSpot.other_types.includes(t));
+            const otherTypesToAdd = updatedEcoSpot.other_types.filter(t => !currentEcoSpot.other_types.includes(t));
+
+            for (const typeId of otherTypesToRemove) {
+                await this.typeService.removeEcoSpotFromType(typeId, id);
+            }
+            for (const typeId of otherTypesToAdd) {
+                await this.typeService.addEcoSpotToType(typeId, id);
+            }
+
+            return updatedEcoSpot;
+        } catch (error) {
+            throw new HttpException("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -89,12 +121,6 @@ export class EcospotService {
         return await Promise.all(ecoSpotIds.map(id => this.findOne(id)));
     }
 
-    async updateEcoSpotInClients(ecoSpot: EcoSpot): Promise<void> {
-        const { _id, name, address, main_type, other_types } = ecoSpot;
-        const ecoSpotData = { _id, name, address, main_type, other_types };
-
-        await this.clientService.updateEcoSpotInFavAndCreated(ecoSpotData);
-    }
 
 
 }

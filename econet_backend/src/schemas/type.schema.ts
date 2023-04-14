@@ -12,10 +12,10 @@ export class Type extends Document {
     @Prop({required: true})
     description: string;
 
-    @Prop({required: true, unique: true})
-    logo: Buffer;
+    //@Prop({required: true, unique: true})
+    //logo: Buffer;
 
-    @Prop({type:[String],required: true})
+    @Prop({type:[String],required: true, default: []})
     associated_spots: string[];
 }
 

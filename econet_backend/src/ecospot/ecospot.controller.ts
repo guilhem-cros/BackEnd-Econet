@@ -8,9 +8,9 @@ import { EcoSpot } from '../schemas/ecospot.schema';
 export class EcospotController {
     constructor(private readonly ecospotService: EcospotService) {}
 
-    @Post()
-    create(@Body() createEcoSpotDto: CreateEcoSpotDto): Promise<EcoSpot> {
-        return this.ecospotService.create(createEcoSpotDto);
+    @Post(':idClient')
+    create(@Body() createEcoSpotDto: CreateEcoSpotDto, @Param('idClient') idClient: string): Promise<EcoSpot> {
+        return this.ecospotService.create(createEcoSpotDto, idClient);
     }
 
     @Get()

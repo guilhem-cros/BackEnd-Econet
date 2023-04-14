@@ -10,7 +10,6 @@ export class UpdateClientDto {
     created_publications?: string[];
     fav_ecospots?: EcoSpot[];
     created_ecospots?: EcoSpot[];
-
-    //profile_pic?: Buffer; //TODO: gestion des images
+    profile_pic?: Buffer;
 
 }

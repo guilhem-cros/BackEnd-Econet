@@ -18,22 +18,22 @@ export class Client extends Document {
     @Prop({required: true, unique: true})
     firebaseId: string;
 
-    @Prop({required: true})
+    @Prop({required: true, default: false})
     isAdmin: boolean;
 
-    @Prop()
+    @Prop({type: Buffer, required: true})
     profile_pic: Buffer;
 
-    @Prop({type:[String],required: true})
+    @Prop({type:[String],required: true, default: []})
     fav_articles: string[];
 
-    @Prop({type:[String],required: true})
+    @Prop({type:[String],required: true, default: []})
     created_publications: string[];
 
-    @Prop({type:[{type: mongoose.Schema.Types.ObjectId,ref:EcoSpot.name}],required: true})
+    @Prop({type:[{type: mongoose.Schema.Types.ObjectId,ref:EcoSpot.name}],required: true, default: []})
     fav_ecospots: EcoSpot[];
 
-    @Prop({type:[{type: mongoose.Schema.Types.ObjectId,ref:EcoSpot.name}],required: true})
+    @Prop({type:[{type: mongoose.Schema.Types.ObjectId,ref:EcoSpot.name}],required: true, default: []})
     created_ecospots: EcoSpot[];
 }
 

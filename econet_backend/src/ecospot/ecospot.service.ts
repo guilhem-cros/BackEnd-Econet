@@ -6,6 +6,7 @@ import { UpdateEcoSpotDto } from './dto/update-ecospot.dto';
 import { EcoSpot } from '../schemas/ecospot.schema';
 import {TypeService} from "../type/type.service";
 import {ClientService} from "../client/client.service";
+import {Type} from "../schemas/type.schema";
 
 @Injectable()
 export class EcospotService {
@@ -19,20 +20,21 @@ export class EcospotService {
         }
     }
 
-    async create(createEcoSpotDto: CreateEcoSpotDto, clientId: string): Promise<EcoSpot> {
+    async create(createEcoSpotDto: CreateEcoSpotDto, clientId: string, pictureBuffer: Buffer): Promise<EcoSpot> {
         try{
-            const mainType = await this.typeService.findOne(createEcoSpotDto.main_type.id);
+            const mainType = await this.typeService.findOne(createEcoSpotDto.main_type_id);
             const createdEcoSpot = new this.ecoSpotModel({
                 ...createEcoSpotDto,
-                mainType,
+                main_type: mainType,
+                picture: pictureBuffer
             });
             const savedEcoSpot = await createdEcoSpot.save();
 
             // Mettre à jour le type principal
-            await this.typeService.addEcoSpotToType(createEcoSpotDto.main_type.id, savedEcoSpot._id);
+            await this.typeService.addEcoSpotToType(createEcoSpotDto.main_type_id, savedEcoSpot._id);
 
             // Mettre à jour les types secondaires
-            for (const typeId of createEcoSpotDto.other_types) {
+            for (const typeId of savedEcoSpot.other_types) {
                 await this.typeService.addEcoSpotToType(typeId, savedEcoSpot._id);
             }
 
@@ -69,17 +71,23 @@ export class EcospotService {
         }
     }
 
-    async update(id: string, updateEcoSpotDto: UpdateEcoSpotDto): Promise<EcoSpot> {
+    async update(id: string, updateEcoSpotDto: UpdateEcoSpotDto, type?: Type): Promise<EcoSpot> {
         this.checkId(id);
         try {
+            let mainType: Type;
+            if(!type){
+                mainType = await this.typeService.findOneWithoutAssociatedSpots(updateEcoSpotDto.main_type_id);
+            } else{
+                mainType = type;
+            }
             const currentEcoSpot = await this.ecoSpotModel.findById(id).exec();
             const updatedEcoSpot = await this.ecoSpotModel
-                .findOneAndUpdate({ _id: id }, { $set: updateEcoSpotDto }, { new: true })
+                .findOneAndUpdate({ _id: id }, { $set: {...updateEcoSpotDto, main_type: mainType} }, { new: true })
                 .exec();
 
             if (currentEcoSpot.main_type !== updatedEcoSpot.main_type) {
-                await this.typeService.removeEcoSpotFromType(currentEcoSpot.main_type.id, id);
-                await this.typeService.addEcoSpotToType(updatedEcoSpot.main_type.id, id);
+                await this.typeService.removeEcoSpotFromType(currentEcoSpot.main_type._id.toString(), id);
+                await this.typeService.addEcoSpotToType(updatedEcoSpot.main_type._id.toString(), id);
             }
 
             const otherTypesToRemove = currentEcoSpot.other_types.filter(t => !updatedEcoSpot.other_types.includes(t));

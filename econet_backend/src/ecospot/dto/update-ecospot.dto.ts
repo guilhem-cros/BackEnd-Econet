@@ -4,13 +4,7 @@ export class UpdateEcoSpotDto {
     details?: string;
     tips?: string;
     picture?: Buffer;
-    main_type?: {
-        id: string;
-        name: string;
-        color: string;
-        //logo: Buffer;
-        description: string;
-    };
+    main_type_id?: string;
     other_types?: string[];
     isPublished?: boolean;
 }

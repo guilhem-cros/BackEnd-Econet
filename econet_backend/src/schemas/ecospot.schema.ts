@@ -1,5 +1,6 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import {Spot} from "./spot.schema";
+import {ObjectId} from "mongoose";
 
 @Schema()
 export class EcoSpot extends Spot {
@@ -11,19 +12,19 @@ export class EcoSpot extends Spot {
     @Prop({required: true})
     tips: string;
 
-    //@Prop()
-    //picture: Buffer;
+    @Prop({required: true, type: Buffer})
+    picture: Buffer;
 
     @Prop({type: {},required: true})
     main_type: {
-        id: string;
+        _id: ObjectId;
         name: string;
         color: string;
-        //logo: Buffer;
+        logo: Buffer;
         description: string;
     };
 
-    @Prop({type:[String],required: true})
+    @Prop({type:[String],required: true, default: []})
     other_types: string[];
 
     @Prop({required: true, default: false})

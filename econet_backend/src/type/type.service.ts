@@ -18,9 +18,9 @@ export class TypeService {
         }
     }
 
-    async create(createTypeDto: CreateTypeDto): Promise<Type> {
+    async create(createTypeDto: CreateTypeDto, logoBuffer: Buffer): Promise<Type> {
         try{
-            const createdType = new this.typeModel(createTypeDto);
+            const createdType = new this.typeModel({...createTypeDto, logo: logoBuffer});
             return await createdType.save();
         }
         catch (error){
@@ -94,16 +94,10 @@ export class TypeService {
         const associatedEcoSpots = type.associated_spots;
         for (const ecoSpotId of associatedEcoSpots) {
             const ecoSpot = await this.ecoSpotService.findOne(ecoSpotId);
-            if (ecoSpot && ecoSpot.main_type.id === type._id.toString()) {
-                ecoSpot.main_type = {
-                    id: type._id.toString(),
-                    name: type.name,
-                    color: type.color,
-                    //logo: type.logo,
-                    description: type.description,
-                };
+
+            if (ecoSpot && ecoSpot.main_type._id.toString() === type._id.toString()) {
                 try{
-                    await this.ecoSpotService.update(ecoSpotId, ecoSpot);
+                    await this.ecoSpotService.update(ecoSpotId, {main_type_id: type._id.toString()}, type);
                 }
                 catch (error){
                     throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -126,6 +120,20 @@ export class TypeService {
             { $pull: { associated_spots: ecoSpotId } },
             { new: true, useFindAndModify: false },
         );
+    }
+
+    async findOneWithoutAssociatedSpots(id: string): Promise<Type> {
+        this.checkId(id);
+        try {
+            const type = await this.typeModel.findById(id, {associated_spots: 0}).exec();
+            if(!type){
+                throw new HttpException("Type not found",HttpStatus.NOT_FOUND);
+            }
+            return type;
+        }
+        catch (error){
+            throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 

@@ -3,14 +3,7 @@ export class CreateEcoSpotDto {
     address: string;
     details: string;
     tips: string;
-    picture: Buffer;
-    main_type: {
-        id: string;
-        name: string;
-        color: string;
-        //logo: Buffer;
-        description: string;
-    };
-    other_types: string[];
-    isPublished: boolean;
+    main_type_id: string;
+    other_types?: string[];
+    isPublished?: boolean;
 }

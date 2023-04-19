@@ -6,4 +6,5 @@ export class CreateEcoSpotDto {
     main_type_id: string;
     other_types?: string[];
     isPublished?: boolean;
+    picture_url: string;
 }

@@ -5,7 +5,6 @@ import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Client } from '../schemas/client.schema';
 import {EcoSpot} from "../schemas/ecospot.schema";
-import * as admin from 'firebase-admin';
 import {setUserRole} from "../auth/auth.service";
 
 @Injectable()
@@ -17,12 +16,14 @@ export class ClientService {
             throw new HttpException("Client not found",HttpStatus.NOT_FOUND);
         }
     }
-    async create(createClientDto: CreateClientDto, profilePicBuffer: Buffer): Promise<Client> {
+    async create(createClientDto: CreateClientDto): Promise<Client> {
         try{
-            const createdClient = new this.clientModel({ ...createClientDto, profile_pic: profilePicBuffer });
+            console.log(createClientDto)
+            const createdClient = new this.clientModel(createClientDto);
+            console.log(createClientDto)
             const savedClient = await createdClient.save();
 
-            // Utilisez la méthode setUserRole pour définir le rôle de l'utilisateur en tant qu'utilisateur classique
+            // Utilise la méthode setUserRole pour définir le rôle de l'utilisateur en tant qu'utilisateur classique
             await setUserRole(createClientDto.firebaseId, 'user');
 
             return savedClient;

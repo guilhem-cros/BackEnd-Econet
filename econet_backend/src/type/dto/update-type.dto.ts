@@ -2,6 +2,6 @@ export class UpdateTypeDto {
     name?: string;
     color?: string;
     description?: string;
-    logo?: Buffer;
+    logo_url?: string;
     associated_spots?: string[];
 }

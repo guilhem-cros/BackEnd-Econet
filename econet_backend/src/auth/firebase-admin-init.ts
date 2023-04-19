@@ -17,3 +17,5 @@ const firebase_params = {
 admin.initializeApp({
     credential: admin.credential.cert(firebase_params),
 });
+
+export default admin;

@@ -1,3 +1,7 @@
+/**
+ * DTO corresponding to data required and used to update an ecospot
+ * Every param is optional
+ */
 export class UpdateEcoSpotDto {
     name?: string;
     address?: string;

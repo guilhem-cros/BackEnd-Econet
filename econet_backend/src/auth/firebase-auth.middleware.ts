@@ -2,6 +2,9 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as admin from 'firebase-admin';
 
+/**
+ * Middleware used to handling and decoding token
+ */
 @Injectable()
 export class FirebaseAuthMiddleware implements NestMiddleware {
     async use(req: Request, res: Response, next: NextFunction) {

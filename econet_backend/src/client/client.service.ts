@@ -11,11 +11,25 @@ import {setUserRole} from "../auth/auth.service";
 export class ClientService {
     constructor(@InjectModel(Client.name) private clientModel: Model<Client>) {}
 
+    /**
+     * Check if a specified string is a valid ObjectId
+     * @param id the checked string
+     * @private
+     * @throws HttpException if id is invalid
+     */
     private checkId(id: string){
         if(!isValidObjectId(id)){
             throw new HttpException("Client not found",HttpStatus.NOT_FOUND);
         }
     }
+
+    /**
+     * Create a client using a createClientDto and save it into the DB
+     * Then set the role of the client to user
+     * @param createClientDto
+     * @return the saved client
+     * @throws HttpException if an error occurs during the operation
+     */
     async create(createClientDto: CreateClientDto): Promise<Client> {
         try{
             console.log(createClientDto)
@@ -23,7 +37,6 @@ export class ClientService {
             console.log(createClientDto)
             const savedClient = await createdClient.save();
 
-            // Utilise la méthode setUserRole pour définir le rôle de l'utilisateur en tant qu'utilisateur classique
             await setUserRole(createClientDto.firebaseId, 'user');
 
             return savedClient;
@@ -34,6 +47,11 @@ export class ClientService {
 
     }
 
+    /**
+     * Get all the registered client from the database
+     * @return a list of Client
+     * @throws HttpException if an error occurs during operation
+     */
     async findAll(): Promise<Client[]> {
         try{
             return await this.clientModel.find().populate('fav_ecospots').populate('created_ecospots').exec();
@@ -43,6 +61,12 @@ export class ClientService {
         }
     }
 
+    /**
+     * Get a single client using its ObjectId and populate its linked lists of ecospots
+     * @param id the id of the looked for client
+     * @return the matching Client
+     * @throws HttpException if the id isn't found or invalid, if an error occurs during the operation
+     */
     async findOne(id: string): Promise<Client> {
         this.checkId(id);
         try{
@@ -57,6 +81,12 @@ export class ClientService {
         }
     }
 
+    /**
+     * Get a single client using its firebaseId and populate its linked lists of ecospots
+     * @param firebaseId the firebase uid of the looked for client
+     * @return the matching Client
+     * @throws HttpException if the id isn't found or invalid, if an error occurs during the operation
+     */
     async findOneByFirebaseId(firebaseId: string): Promise<Client> {
         try{
             const client = await this.clientModel.findOne({firebaseId:firebaseId}).populate('fav_ecospots').populate('created_ecospots').exec();
@@ -70,6 +100,15 @@ export class ClientService {
         }
 
     }
+
+    /**
+     * Update a client by its id and using a updateClientDto object as updated data
+     * @param id the id of the client to update
+     * @param updateClientDto the dto object containing data used to update the client
+     * @return the updated client
+     * @throws HttpException if the specified id is invalid
+     *                      if an error occurs during the operation
+     */
     async update(id: string, updateClientDto: UpdateClientDto): Promise<Client> {
         this.checkId(id);
         try{
@@ -80,14 +119,13 @@ export class ClientService {
         }
     }
 
-    async updateByFirebaseId(firebaseId: string, updateClientDto: UpdateClientDto): Promise<Client> {
-        try{
-            return await this.clientModel.findOneAndUpdate({firebaseId: firebaseId}, updateClientDto, { new: true }).exec();
-        }
-        catch (error) {
-            throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    /**
+     * Remove a client from the DB by its id
+     * @param id the id of the client to delete
+     * @return the deleted client
+     * @throws HttpException if id is invalid
+     *                      if an error occurs during operation
+     */
     async remove(id: string): Promise<Client> {
         this.checkId(id);
         try{
@@ -98,15 +136,12 @@ export class ClientService {
         }
     }
 
-    async removeByFirebaseId(firebaseId: string): Promise<Client> {
-        try{
-            return await this.clientModel.findOneAndRemove({firebaseId:firebaseId}).exec();
-        }
-        catch (error) {
-            throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
+    /**
+     * Remove a specified ecospot from every list of the client containing ecospot or id of ecospot
+     * @param ecoSpotId the id of the ecospot to remove
+     * @throws HttpException if ecospotId doesn't match any ecospot
+     *                      if an error occurs during operation
+     */
     async removeEcoSpotFromClient(ecoSpotId: string): Promise<void> {
         if(!isValidObjectId(ecoSpotId)){
             throw new HttpException("Ecospot not found",HttpStatus.NOT_FOUND);
@@ -122,7 +157,12 @@ export class ClientService {
         }
     }
 
-
+    /**
+     * Adding an ecospot's id in the list associated to the ecospots created by the client
+     * @param clientId the client for which ecospot is added
+     * @param ecoSpot the ecospot to add
+     * @return the updated client
+     */
     async addCreatedEcoSpot(clientId: string, ecoSpot: EcoSpot): Promise<Client> {
         return this.clientModel.findByIdAndUpdate(
             clientId,

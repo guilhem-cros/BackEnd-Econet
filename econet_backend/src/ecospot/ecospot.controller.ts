@@ -16,6 +16,8 @@ import { EcoSpot } from '../schemas/ecospot.schema';
 export class EcospotController {
     constructor(private readonly ecospotService: EcospotService) {}
 
+    //CRUD
+
     @Post(':idClient')
     async create(@Body() createEcoSpotDto: CreateEcoSpotDto, @Param('idClient') idClient: string): Promise<EcoSpot> {
         return this.ecospotService.create(createEcoSpotDto, idClient);
@@ -45,4 +47,6 @@ export class EcospotController {
     remove(@Param('id') id: string): Promise<EcoSpot> {
         return this.ecospotService.remove(id);
     }
+
+    //
 }

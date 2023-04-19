@@ -16,6 +16,8 @@ import { Type } from '../schemas/type.schema';
 export class TypeController {
     constructor(private readonly typeService: TypeService) {}
 
+    //CRUD
+
     @Post()
     async create( @Body() createTypeDto: CreateTypeDto): Promise<Type> {
         return this.typeService.create(createTypeDto);
@@ -40,4 +42,6 @@ export class TypeController {
     //remove(@Param('id') id: string): Promise<Type> {
       //  return this.typeService.remove(id);
     //}
+
+    //
 }

@@ -1,3 +1,7 @@
+/**
+ * DTO corresponding to data required and used to create an ecospot
+ * Some param are not required
+ */
 export class CreateEcoSpotDto {
     name: string;
     address: string;

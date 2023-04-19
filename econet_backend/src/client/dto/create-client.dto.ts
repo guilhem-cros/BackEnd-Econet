@@ -1,3 +1,6 @@
+/**
+ * DTO corresponding to data required and used to create a client
+ */
 export class CreateClientDto {
     full_name: string;
     pseudo: string;

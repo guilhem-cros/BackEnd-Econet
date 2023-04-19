@@ -1,5 +1,9 @@
 import {EcoSpot} from "../../schemas/ecospot.schema";
 
+/**
+ * DTO corresponding to data required and used to update a client
+ * Every param is optional
+ */
 export class UpdateClientDto {
     full_name?: string;
     pseudo?: string;
@@ -11,5 +15,4 @@ export class UpdateClientDto {
     fav_ecospots?: EcoSpot[];
     created_ecospots?: EcoSpot[];
     profile_pic_url?: String;
-
 }

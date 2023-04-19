@@ -19,6 +19,8 @@ import { Roles } from '../auth/roles.decorator';
 export class ClientController {
     constructor(private readonly clientService: ClientService) {}
 
+    //CRUD
+
     @Post()
     async create(@Body() createClientDto: CreateClientDto): Promise<Client> {
         return this.clientService.create(createClientDto);
@@ -46,4 +48,6 @@ export class ClientController {
     //remove(@Param('id') id: string): Promise<Client> {
       //  return this.clientService.remove(id);
     //}
+
+    //
 }

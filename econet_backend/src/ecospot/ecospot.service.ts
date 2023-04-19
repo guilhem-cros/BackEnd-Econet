@@ -14,14 +14,30 @@ export class EcospotService {
                 @Inject(forwardRef(() => TypeService)) private readonly typeService: TypeService,
                 @Inject(forwardRef(() => ClientService)) private readonly clientService: ClientService,) {}
 
+    /**
+     * Check if a specified string is a valid ObjectId
+     * @param id the checked string
+     * @private
+     * @throws HttpException if the id is invalid
+     */
     private checkId(id: string){
         if(!isValidObjectId(id)){
             throw new HttpException("Ecospot not found",HttpStatus.NOT_FOUND);
         }
     }
 
+    /**
+     * Create an ecospot using a createEcospotDto and save it into the DB
+     * Then add this created ecospot to the list of created ecospot of the associated client
+     * Handle the add to this ecospot to the associated types
+     * @param createEcoSpotDto
+     * @param clientId
+     * @return the saved ecospot
+     * @throws HttpException if an error occurs during the operation
+     */
     async create(createEcoSpotDto: CreateEcoSpotDto, clientId: string): Promise<EcoSpot> {
         try{
+            //get the main of the ecospot using main_type_id of the dto
             const mainType = await this.typeService.findOne(createEcoSpotDto.main_type_id);
             const createdEcoSpot = new this.ecoSpotModel({
                 ...createEcoSpotDto,
@@ -29,10 +45,10 @@ export class EcospotService {
             });
             const savedEcoSpot = await createdEcoSpot.save();
 
-            // Mettre à jour le type principal
+            // Update the main type by adding the ecospot to its associated spots
             await this.typeService.addEcoSpotToType(createEcoSpotDto.main_type_id, savedEcoSpot._id);
 
-            // Mettre à jour les types secondaires
+            // Update the other types by adding the ecospot to their associated spots
             for (const typeId of savedEcoSpot.other_types) {
                 await this.typeService.addEcoSpotToType(typeId, savedEcoSpot._id);
             }
@@ -47,6 +63,11 @@ export class EcospotService {
 
     }
 
+    /**
+     * Get all ecospots from the database
+     * @return a list of Ecospot
+     * @throws HttpException if an error occurs during operation
+     */
     async findAll(): Promise<EcoSpot[]> {
         try{
             return await this.ecoSpotModel.find().exec();
@@ -56,6 +77,12 @@ export class EcospotService {
         }
     }
 
+    /**
+     * Get a single ecospot using its id
+     * @param id the id of the looked for ecospot
+     * @return the matching Ecospot
+     * @throws HttpException if the id isn't found or invalid, if an error occurs during the operation
+     */
     async findOne(id: string): Promise<EcoSpot> {
         this.checkId(id);
         try{
@@ -70,6 +97,17 @@ export class EcospotService {
         }
     }
 
+    /**
+     * Update an ecospot by its id and using a updateEcospotDto object as updated data
+     * Handle the remove / add of type to the list of types
+     * Handle the update of the main type if necessary
+     * @param id the id of the ecospot to update
+     * @param updateEcoSpotDto the dto object containing data used to update the ecospot
+     * @param type the new main type of the ecospot
+     * @return the updated ecospot
+     * @throws HttpException if the specified id is invalid
+     *                      if an error occurs during the operation
+     */
     async update(id: string, updateEcoSpotDto: UpdateEcoSpotDto, type?: Type): Promise<EcoSpot> {
         this.checkId(id);
         try {
@@ -105,7 +143,14 @@ export class EcospotService {
         }
     }
 
-
+    /**
+     * Remove an ecospot from the DB by its id
+     * Remove this ecospot or its id from every associated list
+     * @param id the id of the ecospot to delete
+     * @return the ecospot client
+     * @throws HttpException if id is invalid
+     *                      if an error occurs during operation
+     */
     async remove(id: string): Promise<EcoSpot> {
         this.checkId(id);
         try{
@@ -119,6 +164,12 @@ export class EcospotService {
         }
     }
 
+    /**
+     * Get every ecospot linked to a specified type
+     * @param typeId the id of the type
+     * @return a list of ecospot associated to the specified type
+     * @throws HttpException if typeId doesn't match any existing type
+     */
     async findByType(typeId: string): Promise<EcoSpot[]> {
         const type = await this.typeService.findOne(typeId);
         if (!type) {

@@ -38,7 +38,7 @@ export class EcospotService {
     async create(createEcoSpotDto: CreateEcoSpotDto, clientId: string): Promise<EcoSpot> {
         try{
             //get the main of the ecospot using main_type_id of the dto
-            const mainType = await this.typeService.findOne(createEcoSpotDto.main_type_id);
+            const mainType = await this.typeService.findOneWithoutAssociatedSpots(createEcoSpotDto.main_type_id);
             const createdEcoSpot = new this.ecoSpotModel({
                 ...createEcoSpotDto,
                 main_type: mainType,

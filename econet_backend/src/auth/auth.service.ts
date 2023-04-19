@@ -1,4 +1,4 @@
-import admin from 'firebase-admin';
+import admin from './firebase-admin-init';
 
 /**
  * Function adding a custom claim called 'role' to the JWT token of the client

@@ -32,9 +32,7 @@ export class ClientService {
      */
     async create(createClientDto: CreateClientDto): Promise<Client> {
         try{
-            console.log(createClientDto)
             const createdClient = new this.clientModel(createClientDto);
-            console.log(createClientDto)
             const savedClient = await createdClient.save();
 
             await setUserRole(createClientDto.firebaseId, 'user');

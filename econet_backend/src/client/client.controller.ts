@@ -8,7 +8,7 @@ import {
     Delete,
     UploadedFile,
     UseInterceptors,
-    HttpException, HttpStatus
+    HttpException, HttpStatus, UseGuards
 } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { CreateClientDto} from './dto/create-client.dto';
@@ -17,6 +17,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Client } from '../schemas/client.schema';
 import {Express} from "express";
 import * as sharp from 'sharp';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('client')
 export class ClientController {
@@ -39,6 +41,8 @@ export class ClientController {
     }
 
     @Get()
+    @Roles('user', 'admin')
+    @UseGuards(AuthGuard('jwt'))
     findAll(): Promise<Client[]> {
         return this.clientService.findAll();
     }

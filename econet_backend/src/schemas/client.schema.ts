@@ -2,7 +2,6 @@ import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import {EcoSpot} from "./ecospot.schema";
 import * as mongoose from "mongoose";
-import {EcospotService} from "../ecospot/ecospot.service";
 
 @Schema()
 export class Client extends Document {
@@ -21,8 +20,8 @@ export class Client extends Document {
     @Prop({required: true, default: false})
     isAdmin: boolean;
 
-    @Prop({type: Buffer, required: true})
-    profile_pic: Buffer;
+    @Prop({required: true})
+    profile_pic_url: string;
 
     @Prop({type:[String],required: true, default: []})
     fav_articles: string[];

@@ -12,15 +12,15 @@ export class EcoSpot extends Spot {
     @Prop({required: true})
     tips: string;
 
-    @Prop({required: true, type: Buffer})
-    picture: Buffer;
+    @Prop({required: true})
+    picture_url: string;
 
     @Prop({type: {},required: true})
     main_type: {
         _id: ObjectId;
         name: string;
         color: string;
-        logo: Buffer;
+        logo_url: string;
         description: string;
     };
 

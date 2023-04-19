@@ -10,6 +10,6 @@ export class UpdateClientDto {
     created_publications?: string[];
     fav_ecospots?: EcoSpot[];
     created_ecospots?: EcoSpot[];
-    profile_pic?: Buffer;
+    profile_pic_url?: String;
 
 }

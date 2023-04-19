@@ -18,12 +18,15 @@ export class TypeService {
         }
     }
 
-    async create(createTypeDto: CreateTypeDto, logoBuffer: Buffer): Promise<Type> {
+    async create(createTypeDto: CreateTypeDto): Promise<Type> {
         try{
-            const createdType = new this.typeModel({...createTypeDto, logo: logoBuffer});
+            console.log(createTypeDto)
+            const createdType = new this.typeModel(createTypeDto);
+            console.log(createTypeDto)
             return await createdType.save();
         }
         catch (error){
+            console.log(error)
             throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

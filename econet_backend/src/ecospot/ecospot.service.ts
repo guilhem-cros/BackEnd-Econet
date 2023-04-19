@@ -20,13 +20,12 @@ export class EcospotService {
         }
     }
 
-    async create(createEcoSpotDto: CreateEcoSpotDto, clientId: string, pictureBuffer: Buffer): Promise<EcoSpot> {
+    async create(createEcoSpotDto: CreateEcoSpotDto, clientId: string): Promise<EcoSpot> {
         try{
             const mainType = await this.typeService.findOne(createEcoSpotDto.main_type_id);
             const createdEcoSpot = new this.ecoSpotModel({
                 ...createEcoSpotDto,
                 main_type: mainType,
-                picture: pictureBuffer
             });
             const savedEcoSpot = await createdEcoSpot.save();
 

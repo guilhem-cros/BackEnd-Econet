@@ -3,7 +3,7 @@ export class UpdateEcoSpotDto {
     address?: string;
     details?: string;
     tips?: string;
-    picture?: Buffer;
+    picture_url?: string;
     main_type_id?: string;
     other_types?: string[];
     isPublished?: boolean;

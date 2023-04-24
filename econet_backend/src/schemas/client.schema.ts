@@ -23,7 +23,7 @@ export class Client extends Document {
     @Prop({required: true, default: false})
     isAdmin: boolean;
 
-    @Prop({required: true})
+    @Prop({required: true, default: "https://firebasestorage.googleapis.com/v0/b/econet-api.appspot.com/o/default_profile_pic.png?alt=media&token=9811ac56-781e-48bd-aa81-5b5403a65f26"})
     profile_pic_url: string;
 
     /**

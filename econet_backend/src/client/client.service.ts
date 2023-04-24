@@ -23,6 +23,20 @@ export class ClientService {
         }
     }
 
+    async   checkEmailPseudoUnique(email: string, pseudo: string): Promise<{ isUnique: boolean; errorMessage: string }> {
+        const emailExists = await this.clientModel.findOne({ mail: email }).exec();
+        const pseudoExists = await this.clientModel.findOne({ pseudo: pseudo }).exec();
+
+        if (emailExists) {
+            return { isUnique: false, errorMessage: "L'adresse mail saisie est déjà associée à un compte." };
+        } else if (pseudoExists) {
+            return { isUnique: false, errorMessage: "Le pseudo saisi est déjà associé à un compte." };
+        } else {
+            return { isUnique: true, errorMessage: '' };
+        }
+    }
+
+
     /**
      * Create a client using a createClientDto and save it into the DB
      * Then set the role of the client to user

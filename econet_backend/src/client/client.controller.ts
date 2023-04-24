@@ -14,13 +14,13 @@ import { UpdateClientDto} from './dto/update-client.dto';
 import { Client } from '../schemas/client.schema';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../auth/roles.decorator';
+import {CheckValidityDto} from "./dto/check-validity.dto";
 
 @Controller('client')
 export class ClientController {
     constructor(private readonly clientService: ClientService) {}
 
     //CRUD
-
     @Post()
     async create(@Body() createClientDto: CreateClientDto): Promise<Client> {
         return this.clientService.create(createClientDto);
@@ -50,4 +50,11 @@ export class ClientController {
     //}
 
     //
+
+
+    @Post('checkValidity')
+    async checkEmailPseudoUnique(@Body() checkValidityDto: CheckValidityDto): Promise<{ isUnique: boolean; errorMessage: string }> {
+        return this.clientService.checkEmailPseudoUnique(checkValidityDto.email, checkValidityDto.pseudo);
+    }
+
 }

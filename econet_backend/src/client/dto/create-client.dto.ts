@@ -6,5 +6,5 @@ export class CreateClientDto {
     pseudo: string;
     email: string;
     firebaseId: string;
-    profile_pic_url: string;
+    profile_pic_url?: string;
 }

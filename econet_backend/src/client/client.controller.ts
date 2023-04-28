@@ -38,6 +38,11 @@ export class ClientController {
         return this.clientService.findOne(id);
     }
 
+    @Get('/byFirebaseId/:uid')
+    findOneByFirebaseId(@Param('uid') uid: string): Promise<Client> {
+        return this.clientService.findOneByFirebaseId(uid);
+    }
+
     @Put(':id')
     async update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto,
     ): Promise<Client> {
@@ -55,6 +60,11 @@ export class ClientController {
     @Post('checkValidity')
     async checkEmailPseudoUnique(@Body() checkValidityDto: CheckValidityDto): Promise<{ isUnique: boolean; errorMessage: string }> {
         return this.clientService.checkEmailPseudoUnique(checkValidityDto.email, checkValidityDto.pseudo);
+    }
+
+    @Post('checkValidity/:id')
+    async checkEmailPseudoUniqueExceptCurrentUser(@Param('id') id: string, @Body() checkValidityDto: CheckValidityDto): Promise<{ isUnique: boolean; errorMessage: string }> {
+        return this.clientService.checkEmailPseudoUniqueExceptCurrentUser( id, checkValidityDto.email, checkValidityDto.pseudo);
     }
 
 }

@@ -11,6 +11,8 @@ import { EcospotService } from './ecospot.service';
 import { CreateEcoSpotDto} from './dto/create-ecospot.dto';
 import { UpdateEcoSpotDto} from './dto/update-ecospot.dto';
 import { EcoSpot } from '../schemas/ecospot.schema';
+import {CheckValidityDto} from "../client/dto/check-validity.dto";
+import {CheckAddressDto} from "./dto/check-address.dto";
 
 @Controller('ecospot')
 export class EcospotController {
@@ -23,6 +25,10 @@ export class EcospotController {
         return this.ecospotService.create(createEcoSpotDto, idClient);
     }
 
+    @Post('check/address')
+    async checkAddressUnique(@Body() checkAddressDto: CheckAddressDto): Promise<{ isUnique: boolean; errorMessage: string }> {
+        return this.ecospotService.checkAddressUnique(checkAddressDto.address);
+    }
     @Get()
     findAll(): Promise<EcoSpot[]> {
         return this.ecospotService.findAll();
@@ -49,4 +55,5 @@ export class EcospotController {
     }
 
     //
+
 }

@@ -24,15 +24,43 @@ export class ClientService {
     }
 
     async   checkEmailPseudoUnique(email: string, pseudo: string): Promise<{ isUnique: boolean; errorMessage: string }> {
-        const emailExists = await this.clientModel.findOne({ mail: email }).exec();
-        const pseudoExists = await this.clientModel.findOne({ pseudo: pseudo }).exec();
+        try{
+            const emailExists = await this.clientModel.findOne({ email: email }).exec();
+            const pseudoExists = await this.clientModel.findOne({ pseudo: pseudo }).exec();
 
-        if (emailExists) {
-            return { isUnique: false, errorMessage: "L'adresse mail saisie est déjà associée à un compte." };
-        } else if (pseudoExists) {
-            return { isUnique: false, errorMessage: "Le pseudo saisi est déjà associé à un compte." };
-        } else {
-            return { isUnique: true, errorMessage: '' };
+            if (emailExists) {
+                return { isUnique: false, errorMessage: "L'adresse mail saisie est déjà associée à un compte." };
+            } else if (pseudoExists) {
+                return { isUnique: false, errorMessage: "Le pseudo saisi est déjà associé à un compte." };
+            } else {
+                return { isUnique: true, errorMessage: '' };
+            }
+        }
+        catch(error){
+            throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    async checkEmailPseudoUniqueExceptCurrentUser(
+        userId: string,
+        email: string,
+        pseudo: string,
+    ): Promise<{ isUnique: boolean; errorMessage: string }> {
+        try{
+            const emailExists = await this.clientModel.findOne({ _id: { $ne: userId }, email: email }).exec();
+            const pseudoExists = await this.clientModel.findOne({ _id: { $ne: userId }, pseudo: pseudo }).exec();
+
+            if (emailExists) {
+                return { isUnique: false, errorMessage: "L'adresse mail saisie est déjà associée à un compte." };
+            } else if (pseudoExists) {
+                return { isUnique: false, errorMessage: "Le pseudo saisi est déjà associé à un compte." };
+            } else {
+                return { isUnique: true, errorMessage: '' };
+            }
+        }
+        catch(error){
+            throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -124,7 +152,7 @@ export class ClientService {
     async update(id: string, updateClientDto: UpdateClientDto): Promise<Client> {
         this.checkId(id);
         try{
-            return await this.clientModel.findByIdAndUpdate(id, updateClientDto, { new: true }).exec();
+            return await this.clientModel.findByIdAndUpdate(id, updateClientDto, { new: true }).populate('fav_ecospots').populate('created_ecospots').exec();
         }
         catch (error){
             throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);

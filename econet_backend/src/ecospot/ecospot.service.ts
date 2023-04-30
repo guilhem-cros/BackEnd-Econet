@@ -26,6 +26,21 @@ export class EcospotService {
         }
     }
 
+    async checkAddressUnique(address: string): Promise<{ isUnique: boolean; errorMessage: string }> {
+        try{
+            const addressExists = await this.ecoSpotModel.findOne({ address: address }).exec();
+            if (addressExists) {
+                return { isUnique: false, errorMessage: "L'adresse saisie est déjà associée à un spot." };
+            } else {
+                return { isUnique: true, errorMessage: '' };
+            }
+        }
+        catch(error){
+            throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
     /**
      * Create an ecospot using a createEcospotDto and save it into the DB
      * Then add this created ecospot to the list of created ecospot of the associated client

@@ -6,15 +6,16 @@ import {
     Put,
     Param,
     Delete,
-    UseGuards
+    UseGuards, Req
 } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { CreateClientDto} from './dto/create-client.dto';
 import { UpdateClientDto} from './dto/update-client.dto';
 import { Client } from '../schemas/client.schema';
-import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../auth/roles.decorator';
 import {CheckValidityDto} from "./dto/check-validity.dto";
+import { CustomAuthGuard } from '../auth/auth.guard';
+
 
 @Controller('client')
 export class ClientController {
@@ -27,26 +28,32 @@ export class ClientController {
     }
 
     @Get()
-    @Roles('user', 'admin')
-    @UseGuards(AuthGuard('jwt'))
+    @Roles('admin')
+    @UseGuards(CustomAuthGuard)
     findAll(): Promise<Client[]> {
         return this.clientService.findAll();
     }
 
     @Get(':id')
+    @Roles('user', 'admin')
+    @UseGuards(CustomAuthGuard)
     findOne(@Param('id') id: string): Promise<Client> {
         return this.clientService.findOne(id);
     }
 
     @Get('/byFirebaseId/:uid')
+    @Roles('user', 'admin')
+    @UseGuards(CustomAuthGuard)
     findOneByFirebaseId(@Param('uid') uid: string): Promise<Client> {
         return this.clientService.findOneByFirebaseId(uid);
     }
 
     @Put(':id')
-    async update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto,
+    @Roles('user', 'admin')
+    @UseGuards(CustomAuthGuard)
+    async update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto, @Req() req
     ): Promise<Client> {
-        return this.clientService.update(id, updateClientDto);
+        return this.clientService.update(id, updateClientDto,req.user);
     }
 
     //@Delete(':id')

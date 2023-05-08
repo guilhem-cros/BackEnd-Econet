@@ -8,7 +8,7 @@ export class UpdateClientDto {
     full_name?: string;
     pseudo?: string;
     email?: string;
-    firebaseId?: string;
+    firebaseId: string;
     isAdmin?: boolean;
     fav_articles?: string[];
     created_publications?: string[];

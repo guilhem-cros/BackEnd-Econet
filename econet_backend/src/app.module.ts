@@ -8,8 +8,7 @@ import { ClientModule } from './client/client.module';
 import { ArticleModule } from './article/article.module';
 import { ConfigModule } from '@nestjs/config';
 import { FirebaseAuthMiddleware } from './auth/firebase-auth.middleware';
-import { RolesGuard } from './auth/roles.guard';
-import {APP_GUARD} from "@nestjs/core";
+import { CustomAuthGuard } from './auth/auth.guard';
 
 
 @Module({
@@ -24,10 +23,7 @@ import {APP_GUARD} from "@nestjs/core";
   controllers: [AppController],
   providers: [
       AppService,
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    }
+      CustomAuthGuard,
   ],
 })
 export class AppModule implements NestModule{

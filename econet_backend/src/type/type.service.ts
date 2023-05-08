@@ -47,10 +47,9 @@ export class TypeService {
      */
     async findAll(): Promise<Type[]> {
         try {
-            return await this.typeModel.find().exec();
-        }
-        catch (error){
-            throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return await this.typeModel.find().sort({ name: 1 }).exec();
+        } catch (error) {
+            throw new HttpException("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

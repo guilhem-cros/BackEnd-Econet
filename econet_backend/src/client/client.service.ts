@@ -149,8 +149,11 @@ export class ClientService {
      * @throws HttpException if the specified id is invalid
      *                      if an error occurs during the operation
      */
-    async update(id: string, updateClientDto: UpdateClientDto): Promise<Client> {
+    async update(id: string, updateClientDto: UpdateClientDto, currentUser: any): Promise<Client> {
         this.checkId(id);
+        if (currentUser.role !== 'admin' && currentUser.uid !== updateClientDto.firebaseId) {
+            throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
+        }
         try{
             return await this.clientModel.findByIdAndUpdate(id, updateClientDto, { new: true }).populate('fav_ecospots').populate('created_ecospots').exec();
         }

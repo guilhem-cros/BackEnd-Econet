@@ -84,11 +84,10 @@ export class EcospotService {
      * @throws HttpException if an error occurs during operation
      */
     async findAll(): Promise<EcoSpot[]> {
-        try{
-            return await this.ecoSpotModel.find().exec();
-        }
-        catch(error){
-            throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            return await this.ecoSpotModel.find().sort({ name: 1 }).exec();
+        } catch (error) {
+            throw new HttpException("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -194,7 +193,23 @@ export class EcospotService {
         return await Promise.all(ecoSpotIds.map(id => this.findOne(id)));
     }
 
+    async findUnpublishedEcospots(): Promise<EcoSpot[]>{
+        try{
+            return this.ecoSpotModel.find({ isPublished: false }).exec();
+        }
+        catch(error){
+            throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
+    async findPublishedEcospots(): Promise<EcoSpot[]>{
+        try{
+            return this.ecoSpotModel.find({ isPublished: true }).exec();
+        }
+        catch(error){
+            throw new HttpException("Internal servor error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
 

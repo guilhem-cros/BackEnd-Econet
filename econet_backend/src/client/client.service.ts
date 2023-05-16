@@ -23,14 +23,10 @@ export class ClientService {
         }
     }
 
-    async   checkEmailPseudoUnique(email: string, pseudo: string): Promise<{ isUnique: boolean; errorMessage: string }> {
+    async   checkPseudoUnique( pseudo: string): Promise<{ isUnique: boolean; errorMessage: string }> {
         try{
-            const emailExists = await this.clientModel.findOne({ email: email }).exec();
             const pseudoExists = await this.clientModel.findOne({ pseudo: pseudo }).exec();
-
-            if (emailExists) {
-                return { isUnique: false, errorMessage: "L'adresse mail saisie est déjà associée à un compte." };
-            } else if (pseudoExists) {
+            if (pseudoExists) {
                 return { isUnique: false, errorMessage: "Le pseudo saisi est déjà associé à un compte." };
             } else {
                 return { isUnique: true, errorMessage: '' };
@@ -42,18 +38,14 @@ export class ClientService {
 
     }
 
-    async checkEmailPseudoUniqueExceptCurrentUser(
+    async checkPseudoUniqueExceptCurrentUser(
         userId: string,
-        email: string,
         pseudo: string,
     ): Promise<{ isUnique: boolean; errorMessage: string }> {
         try{
-            const emailExists = await this.clientModel.findOne({ _id: { $ne: userId }, email: email }).exec();
             const pseudoExists = await this.clientModel.findOne({ _id: { $ne: userId }, pseudo: pseudo }).exec();
 
-            if (emailExists) {
-                return { isUnique: false, errorMessage: "L'adresse mail saisie est déjà associée à un compte." };
-            } else if (pseudoExists) {
+            if (pseudoExists) {
                 return { isUnique: false, errorMessage: "Le pseudo saisi est déjà associé à un compte." };
             } else {
                 return { isUnique: true, errorMessage: '' };

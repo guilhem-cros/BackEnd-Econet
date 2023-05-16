@@ -7,7 +7,6 @@ import {EcoSpot} from "../../schemas/ecospot.schema";
 export class UpdateClientDto {
     full_name?: string;
     pseudo?: string;
-    email?: string;
     firebaseId: string;
     isAdmin?: boolean;
     fav_articles?: string[];

@@ -57,14 +57,14 @@ export class EcospotController {
     }
 
     @Get('unpublished/ecospots')
-    @Roles('user', 'admin')
+    @Roles('admin')
     @UseGuards(CustomAuthGuard)
     async getUnpublishedEcoSpots(): Promise<EcoSpot[]> {
         return await this.ecospotService.findUnpublishedEcospots();
     }
 
     @Get('published/ecospots')
-    @Roles('admin')
+    @Roles('user', 'admin')
     @UseGuards(CustomAuthGuard)
     async getPublishedEcoSpots(): Promise<EcoSpot[]> {
         return await this.ecospotService.findPublishedEcospots();

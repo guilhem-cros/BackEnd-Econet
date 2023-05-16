@@ -65,13 +65,13 @@ export class ClientController {
 
 
     @Post('checkValidity')
-    async checkEmailPseudoUnique(@Body() checkValidityDto: CheckValidityDto): Promise<{ isUnique: boolean; errorMessage: string }> {
-        return this.clientService.checkEmailPseudoUnique(checkValidityDto.email, checkValidityDto.pseudo);
+    async checkPseudoUnique(@Body() checkValidityDto: CheckValidityDto): Promise<{ isUnique: boolean; errorMessage: string }> {
+        return this.clientService.checkPseudoUnique(checkValidityDto.pseudo);
     }
 
     @Post('checkValidity/:id')
-    async checkEmailPseudoUniqueExceptCurrentUser(@Param('id') id: string, @Body() checkValidityDto: CheckValidityDto): Promise<{ isUnique: boolean; errorMessage: string }> {
-        return this.clientService.checkEmailPseudoUniqueExceptCurrentUser( id, checkValidityDto.email, checkValidityDto.pseudo);
+    async checkPseudoUniqueExceptCurrentUser(@Param('id') id: string, @Body() checkValidityDto: CheckValidityDto): Promise<{ isUnique: boolean; errorMessage: string }> {
+        return this.clientService.checkPseudoUniqueExceptCurrentUser( id, checkValidityDto.pseudo);
     }
 
 }

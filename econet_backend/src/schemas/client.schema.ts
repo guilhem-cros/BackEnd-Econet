@@ -15,9 +15,6 @@ export class Client extends Document {
     pseudo: string;
 
     @Prop({required: true, unique: true})
-    email: string;
-
-    @Prop({required: true, unique: true})
     firebaseId: string;
 
     @Prop({required: true, default: false})
